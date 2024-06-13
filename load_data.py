@@ -18,7 +18,7 @@ def load_data():
 def convert_to_documents(data):
     data_point_generator = map(lambda row: f"Patient: {row['input']}\nDoctor: {row['output']}", data.to_dict(orient="records"))
 
-    return [Document(page_content=data_point) for data_point in data_point_generator]
+    return [Document(page_content=data_point, metadata=row.copy()) for data_point, row in zip(data_point_generator, data.to_dict(orient="records"))]
 
 if __name__ == "__main__":
     print(convert_to_documents(load_data()))

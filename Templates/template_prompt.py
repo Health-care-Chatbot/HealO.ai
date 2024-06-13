@@ -26,11 +26,11 @@ def get_chat_prompt(example_prompt) -> ChatPromptTemplate:
     return ChatPromptTemplate.from_messages(
         [
             SystemMessagePromptTemplate(prompt=base_sys_prompt1),
-            HumanMessagePromptTemplate.from_template("Hello, how are you doing?"),
-            AIMessagePromptTemplate.from_template("I'm doing well, thanks! "),
             example_prompt,
+            HumanMessagePromptTemplate.from_template("Hello, how are you doing?"),
+            AIMessagePromptTemplate.from_template("I'm doing well, thanks!"),
             AIMessagePromptTemplate.from_template("Please provide me with patients background and symptoms."),
-            HumanMessagePromptTemplate.from_template("This is my background : {background} and these are my symptoms  : {symptoms}"),      
+            HumanMessagePromptTemplate.from_template("This is my background : {background} and these are my symptoms  : {symptoms}. Can you please list out 5 most likely possible conditions I might have?"),      
         ]
     )
 #============================================================================================================
@@ -43,6 +43,7 @@ base_sys_prompt2: PromptTemplate = PromptTemplate(
     template="""You are a honest helpful Health AI bot as well as a document scraper. You need to provide user with sensitive informations, so be specific with details. Your name is {name}.
                 Use the following pieces of information to answer the user's question.
                 If you don't know the answer, just say that you don't know, don't try to make up an answer.
+                If you need additional information please ask for additional information!
                 Look for the most relevant information in the document and examples provided, if not found use your knowledge but Only return the helpful answer below and nothing else."""
 )
 #____________________________________________________________________________________________________________
