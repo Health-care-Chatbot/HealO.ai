@@ -13,24 +13,22 @@ from Templates import prompt_examples
 # Prompt template for first llm processing.
 
 # System message prompt to manupulate the LLM model for accuracy
-base_sys_prompt1: PromptTemplate = PromptTemplate(
-    input_variables=["name"],
-    template="""You are a honest helpful Health AI bot. You need to provide user with sensitive informations,. Your name is {name}."""
-)
+base_sys_prompt1 : str = """You are a honest helpful Health AI bot. You need to provide user with sensitive informations,. Your name is {name}."""
 
-conditional_sys_prompt1 = PromptTemplate.from_template("""Use the following pieces of information to answer the user's question.
+
+conditional_sys_prompt1 : str = """Use the following pieces of information to answer the user's question.
                 If you don't know the answer, just say that you don't know, don't try to make up an answer.
                 Only return the helpful answer below and nothing else.
-                """),
+                """
 #____________________________________________________________________________________________________________
 
 def get_chat_prompt(example_prompt) -> ChatPromptTemplate:
     return ChatPromptTemplate.from_messages(
         [
-            SystemMessagePromptTemplate(prompt=base_sys_prompt1),
-            HumanMessagePromptTemplate.from_template("Hello, how are you doing?"),
-            AIMessagePromptTemplate.from_template("I'm doing well, thanks! "),
-            SystemMessagePromptTemplate(prompt=conditional_sys_prompt1),
+            SystemMessagePromptTemplate.from_template(base_sys_prompt1),
+            # HumanMessagePromptTemplate.from_template("Hello, how are you doing?"),
+            # AIMessagePromptTemplate.from_template("I'm doing well, thanks! "),
+            # SystemMessagePromptTemplate.from_template(conditional_sys_prompt1),
             example_prompt,
             AIMessagePromptTemplate.from_template("Please provide me with patients background and symptoms."),
             HumanMessagePromptTemplate.from_template("This is my background : {background} and these are my symptoms  : {symptoms}"),      

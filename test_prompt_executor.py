@@ -22,9 +22,9 @@ def get_refined_prompt(examples):
 
 # Test prompts on gemini-llm model 
 def test_prompt_on_llm(prompt) :
-    llm = ChatGoogleGenerativeAI(model='gemini-pro', temperature=0.9)
+    llm = ChatGoogleGenerativeAI(model='gemini-1.5-pro-latest', temperature=0.9)
     # response = llm.invoke("How are you")
-    chat_chain = LLMChain(llm=llm, prompt_template=prompt)
+    chat_chain = LLMChain(llm=llm, prompt=prompt)
     # response = llm.invoke(prompt)
     chat_input = {
         "name": "HealO",
@@ -32,7 +32,7 @@ def test_prompt_on_llm(prompt) :
         "symptoms":"I have a runny nose and a cough"
     }
     # response = chat_chain.run(chat_input)
-    prediction_msg: dict = chat_chain.run(chat_input)
+    prediction_msg = chat_chain.run(chat_input)
     print(prediction_msg)
 
 
