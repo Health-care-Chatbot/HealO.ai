@@ -65,6 +65,36 @@ def get_refined_prompt2(get_refined_example_prompt) -> ChatPromptTemplate:
     )
 #============================================================================================================
 
+# Prompt template for product items fetch
+
+#Sys messesage prompt for configuring llm to extract products from the response of refined llm
+base_sys_prompt3: PromptTemplate = PromptTemplate(
+    input_variables=["name"],
+    template="""You are a honest helpful Health AI bot as well as a product extractor. You need to provide user with sensitive informations, so be specific with details. Your name is {name}."""
+)
+
+conditional_sys_prompt3 = PromptTemplate.from_template(""" Take the next prompt which is an advice to a patient 
+                                                       and extract any product names mentioned as a cure of disease in the response.
+                                                       Information is sensitive and health-related so dont make up with the answer.
+                                                       Just answer whatever you find in text to be the  product or medicine name needed for cure.
+                                                       Below is a sample example of the ques and answer. Follow this pattern to extract the product name.
+                                                       Also, Important to note to output response as array/list of names of products only.
+                                                       """)
+#____________________________________________________________________________________________________________
+
+def get_product_prompt(get_product_example_prompt) -> ChatPromptTemplate:
+    return ChatPromptTemplate.from_messages(
+        [
+            SystemMessagePromptTemplate(prompt=base_sys_prompt3),
+            SystemMessagePromptTemplate(prompt=conditional_sys_prompt3),
+            get_product_example_prompt,
+            AIMessagePromptTemplate.from_template("Please provide me with the prompt to extract items to buy."),
+            HumanMessagePromptTemplate.from_template("This is my prescription : {prescription}"),
+            SystemMessagePromptTemplate.from_template("Make sure to output as array of product names only."),      
+        ]
+    )
+
+
 # if __name__ == "__main__":
 #     chat_prompt = get_chat_prompt()
 #     chat_prompt.format_messages(name="HealO", user_input="What is the best way to treat a cold?")
