@@ -24,14 +24,14 @@ conditional_sys_prompt1 = PromptTemplate.from_template("""Use the following piec
                 """),
 #____________________________________________________________________________________________________________
 
-def get_chat_prompt(examples) -> ChatPromptTemplate:
+def get_chat_prompt(example_prompt) -> ChatPromptTemplate:
     return ChatPromptTemplate.from_messages(
         [
             SystemMessagePromptTemplate(prompt=base_sys_prompt1),
             HumanMessagePromptTemplate.from_template("Hello, how are you doing?"),
             AIMessagePromptTemplate.from_template("I'm doing well, thanks! "),
             SystemMessagePromptTemplate(prompt=conditional_sys_prompt1),
-            prompt_examples.get_chat_example_prompt1(examples),
+            example_prompt,
             AIMessagePromptTemplate.from_template("Please provide me with patients background and symptoms."),
             HumanMessagePromptTemplate.from_template("This is my background : {background} and these are my symptoms  : {symptoms}"),      
         ]
