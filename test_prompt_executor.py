@@ -14,17 +14,21 @@ def get_chat_prompt(examples):
     return chat_prompt
 
 def get_refined_prompt(examples):
-        #Hardcoded prompt for refined example for now
+    #Hardcoded prompt for refined example for now
     refined_prompt = template_prompt.get_refined_prompt2(examples)
     # refined_prompt.format_messages(name="HealO", background="I am a 20 year old male", symptoms="I have a runny nose and a cough")
     # print(refined_prompt)
     return refined_prompt
 
+def get_product_prompt(examples):
+    product_prompt = template_prompt.get_refined_prompt2(examples)
+    return product_prompt
+
 # Test prompts on gemini-llm model 
 def test_prompt_on_llm(prompt) :
-    llm = ChatGoogleGenerativeAI(model='gemini-pro', temperature=0.9)
+    llm = ChatGoogleGenerativeAI(model='gemini-1.5-pro-latest', temperature=0.9)
     # response = llm.invoke("How are you")
-    chat_chain = LLMChain(llm=llm, prompt_template=prompt)
+    chat_chain = LLMChain(llm=llm, prompt=prompt)
     # response = llm.invoke(prompt)
     chat_input = {
         "name": "HealO",
@@ -32,7 +36,7 @@ def test_prompt_on_llm(prompt) :
         "symptoms":"I have a runny nose and a cough"
     }
     # response = chat_chain.run(chat_input)
-    prediction_msg: dict = chat_chain.run(chat_input)
+    prediction_msg = chat_chain.run(chat_input)
     print(prediction_msg)
 
 
@@ -54,13 +58,17 @@ if __name__ == "__main__":
     
     random_examples = prompt_examples.get_chat_example_prompt1()
     random_examples2 = prompt_examples.get_refined_example_prompt1()
+    random_examples3 = prompt_examples.get_product_example_prompt1()
     # print(random_examples)
     # print(random_examples2)
     #TODO: @ShreeSinghi change the hardcoded prompt to auto-generated refined example prompt
     chat_prompt = get_chat_prompt(random_examples)
     refined_prompt = get_refined_prompt(random_examples2)
+    product_prompt = get_product_prompt(random_examples3)
     # Uncomment below line to test prompt on gemini-llm
-    # print(refined_prompt)
+    # print(product_prompt.format_messages(name="HealO", background="I am a 20 year old"))
     test_prompt_on_llm(chat_prompt)
+    test_prompt_on_llm(refined_prompt)
+    test_prompt_on_llm(product_prompt)
 
 

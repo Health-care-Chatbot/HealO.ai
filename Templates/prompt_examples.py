@@ -47,3 +47,18 @@ def get_refined_example_prompt1(examples = examples):
         examples=examples,
     )
     return few_shot_example_prompt
+
+def get_product_example_prompt1(examples = examples):
+    example_prompt = ChatPromptTemplate.from_messages(
+        [   
+            ("human", "{input}"),
+            ("ai", "{output}"),
+        ]
+    )
+
+    few_shot_example_prompt = FewShotChatMessagePromptTemplate(
+        example_prompt=example_prompt,
+        examples=examples,
+    )
+    return few_shot_example_prompt
+
