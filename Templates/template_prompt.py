@@ -8,7 +8,7 @@ from langchain_core.prompts import (
     ChatPromptTemplate,
     FewShotChatMessagePromptTemplate,
 )
-import prompt_examples
+from Templates import prompt_examples
 
 # Prompt template for first llm processing.
 
@@ -33,7 +33,7 @@ def get_chat_prompt() -> ChatPromptTemplate:
             SystemMessagePromptTemplate(prompt=conditional_sys_prompt1),
             prompt_examples.get_chat_example_prompt1(),
             AIMessagePromptTemplate.from_template("Please provide me with patients background and symptoms."),
-            HumanMessagePromptTemplate.from_template("This is my background : {background} and these are my symptoms  : {symptopms}"),      
+            HumanMessagePromptTemplate.from_template("This is my background : {background} and these are my symptoms  : {symptoms}"),      
         ]
     )
 #============================================================================================================
@@ -60,7 +60,7 @@ def get_refined_prompt2(get_refined_example_prompt) -> ChatPromptTemplate:
             SystemMessagePromptTemplate(prompt=conditional_sys_prompt2),
             get_refined_example_prompt,
             AIMessagePromptTemplate.from_template("Please provide me with patients background and symptoms."),
-            HumanMessagePromptTemplate.from_template("This is my background : {background} and these are my symptoms  : {symptopms}"),      
+            HumanMessagePromptTemplate.from_template("This is my background : {background} and these are my symptoms  : {symptoms}"),      
         ]
     )
 #============================================================================================================
