@@ -13,7 +13,7 @@ def load_data():
     data["input"] = data["input"].apply(lambda x: x.replace("Hello doctor,", "").replace("Hi doctor,", ""))
 
     data.rename(columns={"answer_icliniq": "output"}, inplace=True)
-    return data
+    return data.iloc[:100]
 
 def convert_to_documents(data):
     data_point_generator = map(lambda row: f"Patient: {row['input']}\nDoctor: {row['output']}", data.to_dict(orient="records"))
