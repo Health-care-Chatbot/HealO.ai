@@ -4,7 +4,7 @@ from Templates import template_prompt, prompt_examples
 from langchain.chains import LLMChain
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 # from langchain.vectorstores.chroma import Chroma
-
+import replicate
 from dotenv import load_dotenv
 
 def get_chat_prompt(examples):
@@ -21,24 +21,35 @@ def get_refined_prompt(examples):
     return refined_prompt
 
 def get_product_prompt(examples):
-    product_prompt = template_prompt.get_refined_prompt2(examples)
+    product_prompt = template_prompt.get_product_prompt(examples)
     return product_prompt
 
 # Test prompts on gemini-llm model 
 def test_prompt_on_llm(prompt) :
-    llm = ChatGoogleGenerativeAI(model='gemini-1.5-pro-latest', temperature=0.9)
-    # response = llm.invoke("How are you")
-    chat_chain = LLMChain(llm=llm, prompt=prompt)
-    # response = llm.invoke(prompt)
-    chat_input = {
-        "name": "HealO",
-        "background":"I am a 20 year old male", 
-        "symptoms":"I have a runny nose and a cough"
-    }
-    # response = chat_chain.run(chat_input)
-    prediction_msg = chat_chain.run(chat_input)
-    print(prediction_msg)
-
+    # llm = ChatGoogleGenerativeAI(model='gemini-1.5-pro-latest', temperature=0.9)
+    # # response = llm.invoke("How are you")
+    # chat_chain = LLMChain(llm=llm, prompt=prompt)
+    # # response = llm.invoke(prompt)
+    # chat_input = {
+    #     "name": "HealO",
+    #     "background":"I am a 20 year old male", 
+    #     "symptoms":"I have a runny nose and a cough"
+    # }
+    # # response = chat_chain.run(chat_input)
+    # prediction_msg = chat_chain.run(chat_input)
+    # print(prediction_msg)
+    # fomratted_prompt = prompt.format_messages(name="HealO", background="I am a 20 year old", symptoms="I have a runny nose and a cough")
+    # fomratted_prompt = prompt.invoke({"name":"HealO", "background":"I am a 20 year old", "symptoms":"I have a runny nose and a cough"})
+    # fomratted_prompt = prompt.invoke({"name":"HealO", "background":"I am a 20 year old", "symptoms":"I have a runny nose and a cough"})
+    formatted_product_prompt = prompt.invoke ({"name":"HealO", "background":"I am a 20 year old", "symptoms":"I have a runny nose and a cough","prescription":"Take one tablet of Vitamin D3 1000 IU daily, one tablet of Calcium 600mg twice daily, and one capsule of Fish Oil 1000mg daily."})
+    print(formatted_product_prompt.to_string())
+    for event in replicate.stream(
+        "meta/llama-2-70b-chat",
+        input={
+            "prompt": formatted_product_prompt.to_string()
+        },
+    ):
+        print(str(event), end="")
 
 if __name__ == "__main__":
     load_dotenv()
@@ -67,8 +78,8 @@ if __name__ == "__main__":
     product_prompt = get_product_prompt(random_examples3)
     # Uncomment below line to test prompt on gemini-llm
     # print(product_prompt.format_messages(name="HealO", background="I am a 20 year old"))
-    test_prompt_on_llm(chat_prompt)
-    test_prompt_on_llm(refined_prompt)
+    # test_prompt_on_llm(chat_prompt)
+    # test_prompt_on_llm(refined_prompt)
     test_prompt_on_llm(product_prompt)
 
 
