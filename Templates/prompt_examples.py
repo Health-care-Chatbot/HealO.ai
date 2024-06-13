@@ -4,15 +4,7 @@ from langchain_core.prompts import (
 )
 
 # These examples are for chat-LLM to understand user pattend for questioning and answering
-def get_chat_example_prompt1():
-    examples = [
-        {"input": "2+2", "output": "4"},
-        {"input": "2+3", "output": "5"},
-        {"input": "2+3", "output": "5"},
-        {"input": "2+3", "output": "5"},
-        {"input": "2+3", "output": "5"},
-    ]
-
+def get_chat_example_prompt1(examples):
     example_prompt = ChatPromptTemplate.from_messages(
         [   
             ("human", "{input}"),
