@@ -7,27 +7,19 @@ from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmb
 from langchain.llms import Replicate
 from langchain.memory import ConversationBufferMemory
 
-from langchain.vectorstores.chroma import Chroma
+from langchain_community.vectorstores import Chroma
 import replicate
 from dotenv import load_dotenv
+import json
 
-example_query = """I have a runny nose and a cough and my head hurts a lot"""
+import sys
+sys.stdin = open('testfile.txt', 'r')
 
-example_response = """
-1. Common Cold: This is the most likely culprit, especially during certain seasons. A runny nose, cough, and headache are hallmark symptoms.
+llm = ChatGoogleGenerativeAI(model='gemini-1.5-pro-latest', temperature=0.9)
+# llm = Replicate(model="replicate/llama70b-v2-chat:2d19859030ff705a87c746f7e96eea03aefb71f166725aee39692f1476566d48", model_kwargs={"temperature":0.1, "max_length":500})
 
-2. Sinusitis:  A cold can sometimes lead to a sinus infection, causing facial pain and pressure in addition to the cold symptoms.
-
-3. Influenza (Flu):  The flu often comes with more intense symptoms than a cold, including fever, body aches, and fatigue, along with your listed symptoms. 
-
-4. Allergic Rhinitis: If your symptoms are persistent or worsen at certain times of the year, allergies could be the cause.
-
-5. COVID-19: While less likely if your symptoms are mild, it's still possible. COVID-19 can cause a wide range of symptoms, including those you're experiencing.
-"""
 def get_chat_prompt(examples):
     chat_prompt = template_prompt.get_chat_prompt(examples)
-    # chat_prompt.format_messages(name="HealO", background="I am a 20 year old male", symptoms="I have a runny nose and a cough")
-    # print(chat_prompt)
     return chat_prompt
 
 def extract_from_bullets(string):
@@ -41,42 +33,13 @@ def extract_from_bullets(string):
     return [sentence for sentence in sentences if len(sentence)>0]
 
 def get_refined_prompt(examples):
-    #Hardcoded prompt for refined example for now
     refined_prompt = template_prompt.get_refined_prompt2(examples)
-    # refined_prompt.format_messages(name="HealO", background="I am a 20 year old male", symptoms="I have a runny nose and a cough")
-    # print(refined_prompt)
     return refined_prompt
 
 def get_product_prompt(examples):
     product_prompt = template_prompt.get_product_prompt(examples)
     return product_prompt
 
-# Test prompts on gemini-llm model 
-def test_prompt_on_llm(prompt) :
-    llm = ChatGoogleGenerativeAI(model='gemini-1.5-pro-latest', temperature=0.9)
-    # response = llm.invoke("How are you")
-    chat_chain = LLMChain(llm=llm, prompt=prompt)
-    # response = llm.invoke(prompt)
-    chat_input = {
-        "name": "HealO",
-        "background":"I am a 20 year old male", 
-        "symptoms":"I have a runny nose and a cough"
-    }
-    # response = chat_chain.run(chat_input)
-    prediction_msg = chat_chain.run(chat_input)
-    print(prediction_msg)
-    # fomratted_prompt = prompt.format_messages(name="HealO", background="I am a 20 year old", symptoms="I have a runny nose and a cough")
-    # fomratted_prompt = prompt.invoke({"name":"HealO", "background":"I am a 20 year old", "symptoms":"I have a runny nose and a cough"})
-    # fomratted_prompt = prompt.invoke({"name":"HealO", "background":"I am a 20 year old", "symptoms":"I have a runny nose and a cough"})
-    # formatted_product_prompt = prompt.invoke ({"name":"HealO", "background":"I am a 20 year old", "symptoms":"I have a runny nose and a cough","prescription":"Take one tablet of Vitamin D3 1000 IU daily, one tablet of Calcium 600mg twice daily, and one capsule of Fish Oil 1000mg daily."})
-    # print(formatted_product_prompt.to_string())
-    # for event in replicate.stream(
-    #     "meta/llama-2-70b-chat",
-    #     input={
-    #         "prompt": formatted_product_prompt.to_string()
-    #     },
-    # ):
-    #     print(str(event), end="")
 
 if __name__ == "__main__":
     load_dotenv()
@@ -87,28 +50,58 @@ if __name__ == "__main__":
     question_answer_dataframe = load_data()
     question_answer_documents = convert_to_documents(question_answer_dataframe)
     
+    empty_vectordb(vector_db)
     if is_vectordb_empty(vector_db):
         vector_db.add_documents(question_answer_documents)
     
-    # random_examples = [{"input":question_answer_dataframe.iloc[i].input, "output":question_answer_dataframe.iloc[i].output} for i in range(5)]
-    random_examples = [{"input":example_query, "output":example_response}]
-
+    random_examples = json.load(open("data/initial_fewshots.json", "r"))
     random_examples = prompt_examples.get_chat_example_prompt1(random_examples)
-
-    # print(random_examples)
-    # print(random_examples2)
-    #TODO: @ShreeSinghi change the hardcoded prompt to auto-generated refined example prompt
     chat_prompt = get_chat_prompt(random_examples)
-    response = test_prompt_on_llm(chat_prompt)
-    extracted_lines = extract_from_bullets(response)
 
-    documents_list = [vector_db.similarity_search(line, k=2, search_type='similarity') for line in extracted_lines]
+    first_chain = LLMChain(llm=llm, prompt=chat_prompt)
+
+    background = input("What is your background?: ")
+    symptoms = input("Symptoms: ")
+    query = f"This is my background : {background} and these are my symptoms: {symptoms}"
+
+    chat_input = {
+        "name": "HealO",
+        "query": query, 
+    }
+    
+    response = first_chain.invoke(chat_input)
+
+    extracted_lines = extract_from_bullets(response["text"])
+    documents_list = [vector_db.similarity_search(line, k=2) for line in extracted_lines]
     examples_list = [document.metadata for documents in documents_list for document in documents]
 
-    random_examples2 = prompt_examples.get_refined_example_prompt1(examples_list)
-    refined_prompt = get_refined_prompt(random_examples2)
+    refined_prompt = prompt_examples.get_refined_example_prompt1(examples_list)
+    refined_prompt = get_refined_prompt(refined_prompt)
+
     print("##########\n#######")
-    print(test_prompt_on_llm(refined_prompt))
+
+    memory = ConversationBufferMemory(memory_key="chat_history", input_key="query", return_messages=True)
+    second_chain = LLMChain(llm=llm, prompt=refined_prompt, memory=memory)
+
+    chat_input = {
+        "name": "HealO",
+        "query": f"This is my background : {background} and these are my symptoms: {symptoms}", 
+    }
+
+    response = second_chain.invoke(chat_input)
+    while True:
+        print(response["text"])
+        question = input("User: ")
+
+        if question.strip()=="exit":
+            exit()
+        
+        chat_input = {
+            "name": "HealO",
+            "query": query, 
+        }
+        response = second_chain.invoke(chat_input)
+
 
     # random_examples3 = prompt_examples.get_product_example_prompt1(random_examples)
     # product_prompt = get_product_prompt(random_examples3)

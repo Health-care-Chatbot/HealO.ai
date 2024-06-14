@@ -1,7 +1,24 @@
 from langchain_core.prompts import (
     ChatPromptTemplate,
     FewShotChatMessagePromptTemplate,
+    AIMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+    SystemMessagePromptTemplate,
+    PromptTemplate
 )
+
+from langchain.schema import (
+    SystemMessage,
+    HumanMessage,
+    AIMessage
+)
+
+
+refined_system_message = """You are a honest helpful Health AI bot as well as a document scraper. You need to provide user with sensitive informations, so be specific with details. Your name is HealO.
+                            Use the following pieces of information to answer the user's question.
+                            If you don't know the answer, just say that you don't know, don't try to make up an answer.
+                            Look for the most relevant information in the document and examples provided, if not found use your knowledge but Only return the helpful answer below and nothing else.
+                            If you want more information from the patient please ask for additional information"""
 
 examples = [
     {
@@ -67,6 +84,7 @@ def get_chat_example_prompt1(examples):
         example_prompt=example_prompt,
         examples=examples,
     )
+    
     return few_shot_example_prompt
 
 # These examples are for refiner-LLM to use the auto generated examples to find the most relevant information
@@ -79,9 +97,11 @@ def get_refined_example_prompt1(examples):
     )
 
     few_shot_example_prompt = FewShotChatMessagePromptTemplate(
-        example_prompt=example_prompt,
         examples=examples,
+        example_prompt=example_prompt,
+
     )
+
     return few_shot_example_prompt
 
 def get_product_example_prompt1(examples):
