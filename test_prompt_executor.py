@@ -6,8 +6,9 @@ from langchain.chains import LLMChain
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain.llms import Replicate
 from langchain.memory import ConversationBufferMemory
-
 from langchain_community.vectorstores import Chroma
+
+from typing import List
 import replicate
 from dotenv import load_dotenv
 import json
@@ -22,7 +23,16 @@ def get_chat_prompt(examples):
     chat_prompt = template_prompt.get_chat_prompt(examples)
     return chat_prompt
 
-def extract_from_bullets(string):
+def extract_from_bullets(string: str) -> List[str]:
+    """
+    Extracts sentences from a string that starts with a number followed by a period like 1., 2., 3., etc.
+    
+    Args:
+        string (str): The input string containing bullet points.
+        
+    Returns:
+        list: A list of sentences extracted from the bullet points.
+    """
     lines = string.strip().split("\n")
     sentences = []
     counter = 1
@@ -47,10 +57,9 @@ if __name__ == "__main__":
     embedder = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     vector_db = Chroma(embedding_function=embedder, persist_directory='database/tool_mistake_db',  relevance_score_fn='similarity_search_with_score')
 
-    question_answer_dataframe = load_data()
+    question_answer_dataframe = load_data("data/iCliniq.json")
     question_answer_documents = convert_to_documents(question_answer_dataframe)
     
-    empty_vectordb(vector_db)
     if is_vectordb_empty(vector_db):
         vector_db.add_documents(question_answer_documents)
     
