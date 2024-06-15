@@ -24,3 +24,7 @@ func PingRoute(app *fiber.App) {
 func PromptRoute(app *fiber.App) {
 	app.Post("/prompt", utils.UserPrompt)
 }
+// test_curl_request for /prompt/ route
+// curl -X POST http://localhost:5000/prompt/ -H "Content-Type: application/json" -d '{"type": "Text", "body": "hey there!"}'
+// curl -X POST http://localhost:5000/prompt/ -H "Content-Type: application/json" -d '{"type": "Form", "body": {"name": "John", "age": "12"}}'
+

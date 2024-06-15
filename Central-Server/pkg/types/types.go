@@ -14,3 +14,9 @@ type Response struct {
 type UserPrompt struct {
 	Prompt string `json:"prompt"`
 }
+
+// Request: Struct that define the request format from user.
+type Request struct {
+    Type string      `json:"type"`
+    Body interface{} `json:"body"`
+}

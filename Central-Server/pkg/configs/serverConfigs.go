@@ -1,8 +1,6 @@
 package configs
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -20,10 +18,10 @@ func InitServer() *fiber.App {
 	}
 	app := fiber.New(config)
 
-	port := fmt.Sprint(":", EnvBackendPort())
-	err := app.Listen(port)
-	if(err != nil){
-		panic(err)
-	}
+	// port := fmt.Sprint(":", EnvBackendPort())
+	// err := app.Listen(port)
+	// if(err != nil){
+	// 	panic(err)
+	// }
 	return app
 }
