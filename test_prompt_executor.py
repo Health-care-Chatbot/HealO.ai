@@ -54,8 +54,8 @@ def get_product_prompt(examples):
 if __name__ == "__main__":
     load_dotenv()
 
-    embedder = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-    vector_db = Chroma(embedding_function=embedder, persist_directory='database/tool_mistake_db',  relevance_score_fn='similarity_search_with_score')
+    embedder = GoogleGenerativeAIEmbeddings(model="models/embedding-001", task_type="retrieval_query")
+    vector_db = Chroma(embedding_function=embedder, persist_directory='database/tool_mistake_db', relevance_score_fn='similarity_search_with_score', )
 
     question_answer_dataframe = load_data("data/iCliniq.json")
     question_answer_documents = convert_to_documents(question_answer_dataframe)
