@@ -2,5 +2,5 @@
 .env
 chatbot
 __pycache__
-Backend-Server/.env
-Backend-Server/vendor
+Central-Server/.env
+Central-Server/vendor
