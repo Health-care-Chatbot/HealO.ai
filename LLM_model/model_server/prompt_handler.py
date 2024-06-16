@@ -38,7 +38,17 @@ def background_form():
     return jsonify(response), 200
 
 def text_prompt_handler(user_id, msg):
-    return get_llm_response(user_id, msg, get_background_form())
+    output =  get_llm_response(user_id, msg, get_background_form())
+    response = {
+        "user_id": user_id,
+        "conversation": [
+            {
+                "type": "Text",
+                "body": output
+            },
+        ]
+    }
+    return response
 
 def form_prompt_handler(user_id, form_data):
     global background
@@ -54,7 +64,7 @@ def form_prompt_handler(user_id, form_data):
             },
         ]
     }
-    return response, 200
+    return response
 
 def handle_prompt(data):
     if not data or 'user_id' not in data or 'type' not in data or 'body' not in data:
@@ -67,14 +77,14 @@ def handle_prompt(data):
     # Handle the different types of input
     if data['type'] == 'Text':
         resp = text_prompt_handler(user_id, data['body'])
-        response['type'] = 'Text'
-        response['body'] = resp
+        # response['type'] = 'Text'
+        response = resp
     elif data['type'] == 'Form':
         if not isinstance(data['body'], dict):
             return jsonify({'error': 'Invalid form data'}), 400
         resp = form_prompt_handler(user_id, json.dumps(data['body']))
-        response['type'] = 'Form'
-        response['body'] = resp
+        # response['type'] = 'Form'
+        response = resp
     else:
         return jsonify({'error': 'Unknown type'}), 400
 
