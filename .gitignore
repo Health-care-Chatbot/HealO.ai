@@ -1,4 +1,9 @@
-/database/*
-.env
+LLM_model/database/*
+LLM_model/.env
 chatbot
+*/__pycache__
+Central-Server/.env
+Central-Server/vendor
+LLM_model/model_server/__pycache__
+LLM_model/Templates/__pycache__
 __pycache__
