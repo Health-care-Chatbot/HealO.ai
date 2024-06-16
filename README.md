@@ -17,12 +17,14 @@ The goal is to create a healthcare diagnosis chatbot that assists users by analy
 
 ## Steps for setting up the Project
 
-```
-#TODO: @sukhman
-```
+To set-up the project, follow the below commands:
 
-## Steps for using the product
+* Run "python install -r requirement.txt" from LLM_model folder.
+* Run "python3 main.py" from LLM_model folder to spawn the server for interacting with LLM model.
+* Run "npm run" from frontend folder to start the frontend.
 
-```
-#TODO: @sukhman
-```
+---
+To test the backend using cli:
+- Run "python install -r requirement.txt" from LLM_model folder.
+- Run "python3 test_prompt_executor.py" from LLM_model folder to start the cli tool for interacting with LLM model.
+
