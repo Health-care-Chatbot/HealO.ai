@@ -8,6 +8,11 @@ The goal is to create a healthcare diagnosis chatbot that assists users by analy
 
 ![image](https://github.com/Health-care-Chatbot/HealO.ai/assets/41577064/8741fce9-60bc-4e0b-b929-4f24e3657821)
 
+
+# Demo Video
+**[HealO.ai Demonstration video](https://vimeo.com/961351326)** 
+
+
 ## Libraries and Frameworks Used
 
 - [Python](https://www.python.org/): Primary language used for backend

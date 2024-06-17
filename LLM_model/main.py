@@ -29,7 +29,8 @@ def initLLM():
     load_dotenv()
     # sys.stdin = open('testfile.txt', 'r')
     llm = HealOLLM()
-
+    # llm = ChatGoogleGenerativeAI(model='gemini-1.5-pro-latest', temperature=0.9)
+  
     set_llm(llm)
     embedder = GoogleGenerativeAIEmbeddings(model="models/embedding-001", task_type="retrieval_query")
     vector_db = Chroma(embedding_function=embedder, persist_directory='database/tool_mistake_db', relevance_score_fn='similarity_search_with_score', )

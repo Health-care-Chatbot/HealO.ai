@@ -70,7 +70,8 @@ base_sys_prompt3: PromptTemplate = PromptTemplate(
                 Information is sensitive and health-related so dont make up with the answer.
                 Just answer whatever you find in text to be the  product or medicine name needed for cure.
                 Below is a sample example of the ques and answer. Follow this pattern to extract the product name.
-                Also, Important to note to output response as array/list of names of products only and not how many and how much time a day, refer to examples for format of output and stick to it."""
+                Return nothing if the prompt does not have any product name.
+                Also, Important to note to output response as array/list of names of products only and not quantity, refer to examples for format of output and stick to it."""
 )
 #____________________________________________________________________________________________________________
 

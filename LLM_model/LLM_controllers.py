@@ -4,6 +4,7 @@ from Templates import template_prompt, prompt_examples
 from typing import List
 import pickle
 # from model_server import prompt_handler
+import re
 import json
 from langchain.chains import LLMChain
 from langchain.memory import ConversationBufferMemory
@@ -127,7 +128,29 @@ def get_refined_chain(user_id, chat_input, background):
     store_chain(user_id, second_chain)
     # response = second_chain.invoke(chat_input) 
     return second_chain
-       
+
+def extract_product_list(product_list):
+    names = re.findall(r'"(.*?)"', product_list)
+    markdown_links = ""
+    if len(names) != 0:
+        markdown_links += "\n\n **Product List** \n" 
+    for name in names:
+        formatted_name = name.replace(" ", "+")
+        markdown_links += f'<a href="https://www.google.com/search?q={formatted_name}" style="color:#add8e6; text-decoration:underline;">{name}</a>\n'
+    return markdown_links
+    
+def get_product_response(response):
+    """Get the product response from the LLMChain object."""
+    llm = get_llm()
+    
+    product_prompt = get_product_prompt(response)
+    product_chain = LLMChain(llm=llm, prompt=product_prompt)
+    chat_input = {
+        "name": "HealO",
+        "prescription": response, 
+    }
+    product_response = product_chain.invoke(chat_input)
+    return product_response
 
 def get_llm_response(user_id, chat_input, background):
     """Get the response from the LLMChain object."""
@@ -143,4 +166,7 @@ def get_llm_response(user_id, chat_input, background):
         "query": query, 
     }
     response = chain.invoke(chat_input)
-    return response["text"]
+    product_response = get_product_response(response["text"])
+    final_product_string = extract_product_list(product_response["text"])
+    final_response = response["text"] + final_product_string
+    return final_response
