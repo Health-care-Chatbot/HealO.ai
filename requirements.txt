@@ -1,0 +1,6 @@
+
+bitsandbytes
+datasets
+transformers
+peft
+huggingface_hub
