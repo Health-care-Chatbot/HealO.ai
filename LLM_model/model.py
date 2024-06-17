@@ -69,6 +69,3 @@ class HealOLLM(LLM):
     def _llm_type(self) -> str:
         """Get the type of language model used by this chat model."""
         return "peft"
-
-
-custom_llm = HealOLLM()

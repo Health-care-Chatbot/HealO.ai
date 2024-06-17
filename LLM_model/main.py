@@ -5,6 +5,7 @@ from model_server import create_app
 from Templates import template_prompt, prompt_examples
 from load_data import load_data, convert_to_documents
 from vectordb import is_vectordb_empty, empty_vectordb
+from model import HealOLLM
 
 from langchain.chains import LLMChain
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
@@ -27,8 +28,8 @@ def initServer():
 def initLLM():    
     load_dotenv()
     # sys.stdin = open('testfile.txt', 'r')
-    llm = ChatGoogleGenerativeAI(model='gemini-1.5-pro-latest', temperature=0.9)
-    # llm = Replicate(model="replicate/llama70b-v2-chat:2d19859030ff705a87c746f7e96eea03aefb71f166725aee39692f1476566d48", model_kwargs={"temperature":0.1, "max_length":500})
+    llm = HealOLLM()
+
     set_llm(llm)
     embedder = GoogleGenerativeAIEmbeddings(model="models/embedding-001", task_type="retrieval_query")
     vector_db = Chroma(embedding_function=embedder, persist_directory='database/tool_mistake_db', relevance_score_fn='similarity_search_with_score', )
